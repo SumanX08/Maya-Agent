@@ -1,0 +1,27 @@
+{
+  "name": "sumanx-agent",
+  "version": "0.1.0",
+  "description": "An open-source AI Agent SDK built from scratch.",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node examples/basic.js",
+    "dev": "node --watch examples/basic.js",
+    "test": "node --test"
+  },
+  "keywords": [
+    "ai",
+    "agents",
+    "agent-sdk",
+    "llm",
+    "openai"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "openai": "^7.4.0",
+    "uuid": "^14.0.1",
+    "zod": "^4.4.3",
+    "zod-to-json-schema": "^3.25.2"
+  }
+}
