@@ -3,20 +3,21 @@ export class AgentRunner {
     this.agent = agent;
   }
 
-  async run(input) {
+  async run(input,runId,session) {
     const {
       instructions,
       model,
       tools,
-      maxSteps
+      maxSteps,
+      eventBus
     } = this.agent;
 
-    const messages = [
-      {
-        role: "user",
-        content: input
-      }
-    ];
+    session.addMessage({
+  role: "user",
+  content: input
+});
+
+    const messages = session.getMessages();
 
     for (let step = 0; step < maxSteps; step++) {
       console.log(`\n[Agent] Step ${step + 1}`);
@@ -36,8 +37,13 @@ export class AgentRunner {
       // No tool call means the model has produced
       // its final response.
       if (toolCalls.length === 0) {
-        return response;
-      }
+  session.addMessage({
+    role: "assistant",
+    content: response.output
+  });
+
+  return response;
+}
 
       /*
        * IMPORTANT:
