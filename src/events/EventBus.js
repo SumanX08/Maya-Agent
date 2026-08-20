@@ -10,7 +10,7 @@ export class EventBus {
 
     this.listeners.get(event).push(listener);
 
-    // Allows:
+    
     // const unsubscribe = eventBus.on(...)
     return () => {
       const listeners = this.listeners.get(event);
