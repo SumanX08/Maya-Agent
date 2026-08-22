@@ -31,3 +31,36 @@ export {
 export {
   FileSessionStore
 } from "./memory/FileSessionStore.js";
+
+export {
+  GraphClient
+} from "./graph/GraphClient.js";
+
+export {
+  GraphMemory
+} from "./memory/GraphMemory.js";
+
+export {
+  MemoryExtractionModel
+} from "./memory/MemoryExtractionModel.js"; 
+
+export {
+  MemoryExtractionWorker
+} from "./workers/MemoryExtractionWorker.js";
+
+export {
+  BackgroundWorkerManager
+} from "./workers/BackgroundWorkerManager.js";
+
+export {
+  RelationshipBuilderModel
+} from "./memory/RelationshipBuilderModel.js";
+
+export {
+  RelationshipBuilderSchema,
+  RelationshipCandidateSchema
+} from "./memory/RelationshipSchema.js";
+
+export {
+  RelationshipBuilderWorker
+} from "./workers/RelationshipBuilderWorker.js";

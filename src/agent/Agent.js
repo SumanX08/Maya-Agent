@@ -6,14 +6,15 @@ import { InMemorySessionStore } from "../memory/SessionStore.js";
 
 export class Agent {
   constructor({
-    name,
-    instructions,
-    model,
-    tools = [],
-    maxSteps = 10,
-    eventBus = new EventBus(),
-    sessionStore = new InMemorySessionStore()
-  }) {
+  name,
+  instructions,
+  model,
+  tools = [],
+  maxSteps = 10,
+  eventBus = new EventBus(),
+  sessionStore = new InMemorySessionStore(),
+  backgroundWorkers = []
+}) {
     if (!name) {
       throw new Error("Agent name is required");
     }
@@ -35,6 +36,12 @@ export class Agent {
     // Important: actually store these dependencies
     this.eventBus = eventBus;
     this.sessionStore = sessionStore;
+
+    this.backgroundWorkers = backgroundWorkers;
+
+for (const worker of this.backgroundWorkers) {
+  worker.start();
+}
 
     this.runner = new AgentRunner(this);
   }
@@ -75,7 +82,9 @@ export class Agent {
         agent: this.name,
         sessionId: session.id,
         output: response.output,
-        usage: response.usage
+        usage: response.usage,
+        messages: session.getMessages()
+
       };
 
       this.eventBus.emit("run.completed", result);
