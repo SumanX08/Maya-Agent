@@ -96,18 +96,10 @@ export class MemoryExtractionModel {
             messages
           });
 
-          console.log("\n--- RAW MODEL OUTPUT ---");
-console.log(response.output);
-console.log("--- END RAW OUTPUT ---\n");
-
-
         const parsed =
           JSON.parse(response.output);
 
-          console.log("\n--- PARSED OUTPUT ---");
-console.dir(parsed, { depth: null });
-console.log("--- END PARSED OUTPUT ---\n");
-
+          
 
         const validation =
           MemoryExtractionSchema.safeParse(

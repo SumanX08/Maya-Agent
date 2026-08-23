@@ -64,3 +64,27 @@ export {
 export {
   RelationshipBuilderWorker
 } from "./workers/RelationshipBuilderWorker.js";
+
+export {
+  GraphRetriever
+} from "./memory/GraphRetriever.js";
+
+export {
+  Guardrail
+} from "./guardrails/Guardrail.js";
+
+export {
+  GuardrailError
+} from "./errors/GuardrailError.js";
+
+export {
+  OutputValidationError
+} from "./errors/OutputValidationError.js";
+
+export {
+  RetryPolicy
+} from "./reliability/RetryPolicy.js";
+
+export {
+  withTimeout
+} from "./reliability/withTimeout.js";

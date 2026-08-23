@@ -1,3 +1,5 @@
+import neo4j from "neo4j-driver";
+
 const ALLOWED_RELATIONSHIPS = new Set([
   "WORKS_ON",
   "USES",
@@ -198,5 +200,116 @@ export class GraphMemory {
 
   return result.records[0]?.get("exists") || false;
   }
+
+  async getRelationshipsForMaintenance({
+  limit = 100
+} = {}) {
+  const query = `
+    MATCH (a:Entity)-[r]->(b:Entity)
+    RETURN
+      a.id AS from,
+      a.type AS fromType,
+      a.name AS fromName,
+      type(r) AS relation,
+      r.confidence AS confidence,
+      r.source AS source,
+      r.reason AS reason,
+      r.lastMaintainedAt AS lastMaintainedAt,
+      b.id AS to,
+      b.type AS toType,
+      b.name AS toName
+    ORDER BY
+      coalesce(r.confidence, 1.0) ASC
+    LIMIT $limit
+  `;
+
+  const result = await this.graph.run(
+    query,
+    { 
+      limit:neo4j.int(limit)
+
+     }
+  );
+
+  return result.records.map(record => ({
+    from: record.get("from"),
+    fromType: record.get("fromType"),
+    fromName: record.get("fromName"),
+
+    relation: record.get("relation"),
+
+    confidence:
+      record.get("confidence"),
+
+    source:
+      record.get("source"),
+
+    reason:
+      record.get("reason"),
+
+    lastMaintainedAt:
+      record.get("lastMaintainedAt"),
+
+    to: record.get("to"),
+    toType: record.get("toType"),
+    toName: record.get("toName")
+  }));
+  
+  }
+
+  async updateRelationshipConfidence({
+  from,
+  relationship,
+  to,
+  confidence
+}) {
+  const query = `
+    MATCH (a:Entity {id: $from})
+    MATCH (b:Entity {id: $to})
+    MATCH (a)-[r:${relationship}]->(b)
+
+    SET r.confidence = $confidence,
+        r.lastMaintainedAt = datetime()
+
+    RETURN r
+  `;
+
+  const result = await this.graph.run(
+    query,
+    {
+      from,
+      to,
+      confidence
+    }
+  );
+
+  return result.records[0]?.get("r") || null;
+ }
+
+ async removeRelationship({
+  from,
+  relationship,
+  to
+}) {
+  const query = `
+    MATCH (a:Entity {id: $from})
+    MATCH (b:Entity {id: $to})
+    MATCH (a)-[r:${relationship}]->(b)
+
+    DELETE r
+
+    RETURN count(r) AS deleted
+  `;
+
+  const result = await this.graph.run(
+    query,
+    {
+      from,
+      to
+    }
+  );
+
+  return result.records[0]?.get("deleted") || 0;
+ }
 
 }

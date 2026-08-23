@@ -1,6 +1,6 @@
 import OpenAI from "openai";
+import { z } from "zod";
 import { ModelProvider } from "./ModelProvider.js";
-
 
 export class OpenAIProvider extends ModelProvider {
   constructor({
@@ -10,7 +10,9 @@ export class OpenAIProvider extends ModelProvider {
     super();
 
     if (!apiKey) {
-      throw new Error("OPENAI_API_KEY is not configured");
+      throw new Error(
+        "OPENAI_API_KEY is not configured"
+      );
     }
 
     this.model = model;
@@ -21,26 +23,38 @@ export class OpenAIProvider extends ModelProvider {
   }
 
   async generate({
+  instructions,
+  messages = [],
+  tools = [],
+  outputSchema = null
+}) {
+  const request = {
+    model: this.model,
     instructions,
-    messages = [],
-    tools=[]
-  }) {
-    const response = await this.client.responses.create({
-      model: this.model,
+    input: messages,
+    tools
+  };
 
-      instructions,
+  if (outputSchema) {
+    request.text = {
+      format: {
+        type: "json_schema",
+        name: "agent_output",
+        strict: true,
+        schema: z.toJSONSchema(outputSchema)
+      }
+    };
+  }
 
-      input: messages,
+  const response =
+    await this.client.responses.create(
+      request
+    );
 
-      tools
-    });
-
-     return {
+  return {
     output: response.output_text,
-
     outputItems: response.output,
-
     usage: response.usage
   };
-  }
+}
 }

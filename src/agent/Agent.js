@@ -13,7 +13,13 @@ export class Agent {
   maxSteps = 10,
   eventBus = new EventBus(),
   sessionStore = new InMemorySessionStore(),
-  backgroundWorkers = []
+  backgroundWorkers = [],
+  memory=null,
+  guardrails={},
+  outputSchema = null,
+  retryPolicy = {},
+  timeoutMs = 30000
+
 }) {
     if (!name) {
       throw new Error("Agent name is required");
@@ -36,6 +42,17 @@ export class Agent {
     // Important: actually store these dependencies
     this.eventBus = eventBus;
     this.sessionStore = sessionStore;
+    this.memory = memory;
+
+this.outputSchema = outputSchema;
+    this.guardrails = {
+  input: guardrails.input || [],
+  tool: guardrails.tool || [],
+  output: guardrails.output || []
+};
+
+this.retryPolicy = retryPolicy;
+this.timeoutMs = timeoutMs;
 
     this.backgroundWorkers = backgroundWorkers;
 
