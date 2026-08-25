@@ -18,7 +18,9 @@ export class Agent {
   guardrails={},
   outputSchema = null,
   retryPolicy = {},
-  timeoutMs = 30000
+  timeoutMs = 30000,
+  handoffs = [],
+  maxHandoffs = 3
 
 }) {
     if (!name) {
@@ -50,6 +52,9 @@ this.outputSchema = outputSchema;
   tool: guardrails.tool || [],
   output: guardrails.output || []
 };
+
+this.handoffs = handoffs;
+this.maxHandoffs = maxHandoffs;
 
 this.retryPolicy = retryPolicy;
 this.timeoutMs = timeoutMs;
@@ -121,4 +126,23 @@ for (const worker of this.backgroundWorkers) {
       throw error;
     }
   }
+
+  async stream(
+  input,
+  { session = null } = {}
+) {
+  if (!session) {
+    session =
+      this.createSession();
+  }
+
+  const runId =
+    randomUUID();
+
+  return this.runner.stream(
+    input,
+    runId,
+    session
+  );
+}
 }

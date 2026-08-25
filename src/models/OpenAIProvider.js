@@ -57,4 +57,36 @@ export class OpenAIProvider extends ModelProvider {
     usage: response.usage
   };
 }
+async stream({
+  instructions,
+  messages = [],
+  tools = [],
+  outputSchema = null
+}) {
+  const request = {
+    model: this.model,
+    instructions,
+    input: messages,
+    tools,
+    stream: true
+  };
+
+  if (outputSchema) {
+    request.text = {
+      format: {
+        type: "json_schema",
+        name: "agent_output",
+        strict: true,
+        schema: z.toJSONSchema(outputSchema)
+      }
+    };
+  }
+
+  const response =
+    await this.client.responses.create(
+      request
+    );
+
+  return response;
+}
 }

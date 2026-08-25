@@ -42,7 +42,7 @@ export {
 
 export {
   MemoryExtractionModel
-} from "./memory/MemoryExtractionModel.js"; 
+} from "./memory/MemoryExtractionModel.js";
 
 export {
   MemoryExtractionWorker
@@ -88,3 +88,11 @@ export {
 export {
   withTimeout
 } from "./reliability/withTimeout.js";
+
+export {
+  HandoffManager
+} from "./handoffs/HandoffManager.js";
+
+export {
+  TraceCollector
+} from "./tracing/TraceCollector.js";
