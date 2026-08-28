@@ -779,10 +779,7 @@ eventBus.emit("trace", {
           const result =
             await tool.run(args);
 
-          console.log(
-            `[Agent] Tool result:`,
-            result
-          );
+         
 
           messages.push({
             type:

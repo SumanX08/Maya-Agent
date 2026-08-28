@@ -128,11 +128,7 @@ export class RelationshipBuilderModel {
       } catch (error) {
         lastError = error;
 
-        console.log(
-          `Relationship builder attempt ${
-            attempt + 1
-          } failed`
-        );
+        
       }
     }
 

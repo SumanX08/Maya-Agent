@@ -1,9 +1,17 @@
 {
-  "name": "sumanx-agent",
+  "name": "maya-agent",
   "version": "0.1.0",
-  "description": "An open-source AI Agent SDK built from scratch.",
+  "description": "An open-source AI Agent SDK for building agents with tools, memory, guardrails, handoffs, structured output, tracing, and reliability features.",
   "type": "module",
-  "main": "src/index.js",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "start": "node examples/basic.js",
     "dev": "node --watch examples/basic.js",
@@ -14,9 +22,22 @@
     "agents",
     "agent-sdk",
     "llm",
-    "openai"
+    "openai",
+    "ai-agents",
+    "memory",
+    "guardrails",
+    "tools"
   ],
+  "author": "Suman Preet Singh Bagal",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SumanX08/Maya-Agent.git"
+  },
+  "bugs": {
+    "url": "https://github.com/SumanX08/Maya-Agent/issues"
+  },
+  "homepage": "https://github.com/SumanX08/Maya-Agent#readme",
   "dependencies": {
     "dotenv": "^17.4.2",
     "neo4j-driver": "^6.2.0",

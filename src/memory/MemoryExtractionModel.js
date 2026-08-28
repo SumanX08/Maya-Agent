@@ -119,11 +119,7 @@ export class MemoryExtractionModel {
       } catch (error) {
         lastError = error;
 
-        console.log(
-          `Memory extraction attempt ${
-            attempt + 1
-          } failed`
-        );
+        
       }
     }
 

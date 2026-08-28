@@ -60,13 +60,9 @@ export class RelationshipBuilderWorker {
 }) {
   const startedAt = Date.now();
 
-  console.log(
-    "\n🔗 Relationship builder started internally"
-  );
+  
    if (entityIds.length === 0) {
-    console.log(
-      "🔗 No affected entities. Skipping relationship builder."
-    );
+ 
 
     return {
       runId,
@@ -114,26 +110,18 @@ for (const relationship of graphContexts) {
 const graphContext =
   [...uniqueRelationships.values()];
 
-  console.log(
-    "\n🔗 Graph context:"
-  );
+ 
 
-  console.dir(graphContext, {
-    depth: null
-  });
+  
 
   const candidates =
     await this.relationshipModel.analyze(
       graphContext
     );
 
-  console.log(
-    "\n🔗 Relationship candidates:"
-  );
+  
 
-  console.dir(candidates, {
-    depth: null
-  });
+  
 
   const created = [];
   const skipped = [];
@@ -160,9 +148,7 @@ const graphContext =
         to: candidate.to
       });
 
-    console.log(
-      `Checking ${candidate.from} -[${candidate.relation}]-> ${candidate.to}: ${exists ? "EXISTS" : "NEW"}`
-    );
+   
 
     if (exists) {
       skipped.push({
