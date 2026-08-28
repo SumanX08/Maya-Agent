@@ -9,6 +9,10 @@ export {
 } from "./models/OpenAIProvider.js";
 
 export {
+  GeminiProvider
+} from "./models/GeminiProvider.js";
+
+export {
   Tool
 } from "./tools/Tool.js";
 
