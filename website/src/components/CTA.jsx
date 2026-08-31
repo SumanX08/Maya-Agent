@@ -31,13 +31,7 @@ export default function CTA() {
         </div>
 
         <div className="mt-10 flex flex-col justify-center gap-3 sm:flex-row">
-          <a
-            href="#"
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-400 px-6 py-3 text-sm font-semibold text-[#04100b] transition hover:bg-emerald-300"
-          >
-            <BookOpen size={16} />
-            Read the Docs
-          </a>
+         
 
           <a
             href="#"
