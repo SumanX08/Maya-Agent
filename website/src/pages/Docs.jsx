@@ -18,7 +18,7 @@ import StructuredOutput from "./StructuredOutput";
 import Streaming from "./Streaming";
 import Tracing from "./Tracing";
 import Examples from "./Examples";
-import Agents from './AgentS'
+import Agents from './Agents'
 
 
 const pages = {
