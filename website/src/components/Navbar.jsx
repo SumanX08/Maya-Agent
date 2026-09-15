@@ -1,16 +1,17 @@
 import { GitBranch, Menu, X, ArrowUpRight } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <header className="sticky  top-0 z-50 border-b border-emerald-500/10 bg-[#050807]/90 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b border-emerald-500/10 bg-[#050807]/90 backdrop-blur-xl">
       <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 lg:px-8">
-        
+
         {/* Logo */}
-        <a
-          href="#home"
+        <Link
+          to="/"
           className="flex items-center gap-3"
         >
           <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-emerald-400/30 bg-emerald-500/10 text-lg font-bold text-emerald-400 shadow-[0_0_25px_rgba(52,211,153,0.12)]">
@@ -20,17 +21,20 @@ function Navbar() {
           <span className="text-xl font-bold tracking-tight text-white">
             Maya-Agent
           </span>
-        </a>
+        </Link>
 
         {/* Desktop Navigation */}
         <div className="hidden items-center gap-9 md:flex">
-          <a
-            href="#docs"
+
+          {/* Docs */}
+          <Link
+            to="/docs"
             className="text-sm font-medium text-white/60 transition hover:text-emerald-400"
           >
-        
-          </a>
+            Docs
+          </Link>
 
+          {/* GitHub */}
           <a
             href="https://github.com/SumanX08/Maya-Agent"
             target="_blank"
@@ -40,6 +44,7 @@ function Navbar() {
             GitHub
           </a>
 
+          {/* npm */}
           <a
             href="https://www.npmjs.com/package/maya-agent"
             target="_blank"
@@ -49,13 +54,15 @@ function Navbar() {
             npm
           </a>
 
-          <a
-            href="https://www.npmjs.com/package/maya-agent"
+          {/* Get Started */}
+          <Link
+            to="/docs"
             className="flex items-center gap-2 rounded-lg bg-emerald-400 px-5 py-3 text-sm font-semibold text-[#04110b] transition hover:bg-emerald-300"
           >
             Get Started
             <ArrowUpRight size={16} />
-          </a>
+          </Link>
+
         </div>
 
         {/* Mobile Menu Button */}
@@ -71,42 +78,49 @@ function Navbar() {
       {/* Mobile Navigation */}
       {menuOpen && (
         <div className="border-t border-emerald-500/10 bg-[#050807] px-6 py-6 md:hidden">
+
           <div className="flex flex-col gap-5">
-            <a
-              href="#docs"
+
+            {/* Docs */}
+            <Link
+              to="/docs"
               onClick={() => setMenuOpen(false)}
-              className="text-white/70"
+              className="text-white/70 transition hover:text-emerald-400"
             >
               Docs
-            </a>
+            </Link>
 
+            {/* GitHub */}
             <a
               href="https://github.com/SumanX08/Maya-Agent"
               target="_blank"
               rel="noreferrer"
-              className="flex items-center gap-2 text-white/70"
+              className="flex items-center gap-2 text-white/70 transition hover:text-emerald-400"
             >
               GitHub
               <GitBranch size={16} />
             </a>
 
+            {/* npm */}
             <a
               href="https://www.npmjs.com/package/maya-agent"
               target="_blank"
               rel="noreferrer"
-              className="text-white/70"
+              className="text-white/70 transition hover:text-emerald-400"
             >
               npm
             </a>
 
-            <a
-              href="#get-started"
+            {/* Get Started */}
+            <Link
+              to="/docs"
               onClick={() => setMenuOpen(false)}
               className="flex w-fit items-center gap-2 rounded-lg bg-emerald-400 px-5 py-3 font-semibold text-[#04110b]"
             >
               Get Started
               <ArrowUpRight size={16} />
-            </a>
+            </Link>
+
           </div>
         </div>
       )}
