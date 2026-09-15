@@ -31,7 +31,7 @@ export default function CTA() {
         </div>
 
         <div className="mt-10 flex flex-col justify-center gap-3 sm:flex-row">
-          
+
 
           <a
             href="#"
