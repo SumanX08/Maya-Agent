@@ -32,7 +32,7 @@ export default function Introduction() {
         memory, graph memory, handoffs, events, and tracing.
       </p>
 
-      <div className="mt-10 rounded-xl border border-emerald-500/15 bg-emerald-500/[0.03] p-5">
+      <div className="mt-10 rounded-xl border border-emerald-500/15 bg-emerald-500/3 p-5">
         <p className="text-sm leading-6 text-slate-400">
           <span className="font-semibold text-emerald-400">
             Philosophy:

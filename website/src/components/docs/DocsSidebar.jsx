@@ -20,7 +20,7 @@ export default function DocsSidebar({
               className={`w-full rounded-lg px-3 py-2 text-left text-sm transition ${
                 activeSection === section
                   ? "bg-emerald-500/10 font-medium text-emerald-400"
-                  : "text-slate-500 hover:bg-white/[0.03] hover:text-slate-200"
+                  : "text-slate-500 hover:bg-white/3 hover:text-slate-200"
               }`}
             >
               {section}

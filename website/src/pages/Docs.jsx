@@ -7,7 +7,6 @@ import DocsSidebar from "../components/docs/DocsSidebar";
 import Introduction from "./Introduction";
 import Installation from "./Installation";
 import QuickStart from "./QuickStart";
-import Agents from "./Agents";
 import Tools from "./Tools";
 import Guardrails from "./Guardrails";
 import Handoffs from "./Handoffs";
@@ -19,6 +18,7 @@ import StructuredOutput from "./StructuredOutput";
 import Streaming from "./Streaming";
 import Tracing from "./Tracing";
 import Examples from "./Examples";
+import Agents from './AgentS'
 
 
 const pages = {
