@@ -84,54 +84,210 @@ export default function GraphMemory() {
           </div>
         </div>
 
-        <div>
-          <div className="rounded-2xl border border-emerald-500/20 bg-[#0a1210] p-6 shadow-[0_0_60px_rgba(16,185,129,0.04)]">
-            <div className="mb-10 flex items-center gap-2 font-mono text-xs text-emerald-400/70">
-              <CircleDot size={14} />
-              neo4j://localhost:7687
-            </div>
+       <div>
+  <div className="overflow-hidden rounded-2xl border border-emerald-500/20 bg-[#080e0c] shadow-[0_0_60px_rgba(16,185,129,0.04)]">
+    
+    {/* Graph header */}
+    <div className="flex items-center justify-between px-5 pt-5">
+      <div className="flex items-center gap-2 font-mono text-[11px] text-emerald-400/70">
+        <CircleDot size={13} />
+        <span>neo4j://localhost:7687</span>
+      </div>
 
-            <div className="relative mx-auto h-[300px] max-w-md">
-              <div className="absolute left-4 top-28 flex h-16 w-16 items-center justify-center rounded-full border border-emerald-400/30 bg-[#0d1714] text-xs font-semibold text-emerald-200">
-                User
-              </div>
+      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+    </div>
 
-              <div className="absolute left-[150px] top-6 flex h-16 w-16 items-center justify-center rounded-full border border-emerald-400/30 bg-[#0d1714] text-xs font-semibold text-emerald-200">
-                Project
-              </div>
+    {/* Graph */}
+    <div className="px-4 pb-5 pt-4">
+      <svg
+        viewBox="0 0 520 270"
+        className="h-auto w-full"
+        preserveAspectRatio="xMidYMid meet"
+      >
+        {/* Connections */}
 
-              <div className="absolute right-4 top-6 flex h-16 w-16 items-center justify-center rounded-full border border-emerald-400/30 bg-[#0d1714] text-xs font-semibold text-emerald-200">
-                Tech
-              </div>
+        {/* User → Project */}
+        <line
+          x1="118"
+          y1="150"
+          x2="232"
+          y2="105"
+          stroke="rgba(16,185,129,0.35)"
+          strokeWidth="1"
+        />
 
-              <div className="absolute right-4 bottom-10 flex h-16 w-16 items-center justify-center rounded-full border border-emerald-400/30 bg-[#0d1714] text-xs font-semibold text-emerald-200">
-                JavaScript
-              </div>
+        {/* Project → Technology */}
+        <line
+          x1="292"
+          y1="90"
+          x2="358"
+          y2="90"
+          stroke="rgba(16,185,129,0.35)"
+          strokeWidth="1"
+        />
 
-              <div className="absolute left-[72px] top-[120px] h-px w-[100px] rotate-[-16deg] bg-emerald-400/30" />
+        {/* User → JavaScript */}
+        <line
+          x1="118"
+          y1="160"
+          x2="358"
+          y2="205"
+          stroke="rgba(16,185,129,0.35)"
+          strokeWidth="1"
+        />
 
-              <div className="absolute left-[205px] top-[40px] h-px w-[100px] bg-emerald-400/30" />
+        {/* Connection dots */}
+        <circle
+          cx="232"
+          cy="105"
+          r="2.5"
+          fill="#10b981"
+        />
 
-              <div className="absolute left-[72px] top-[145px] h-px w-[210px] rotate-[6deg] bg-emerald-400/30" />
+        <circle
+          cx="358"
+          cy="90"
+          r="2.5"
+          fill="#10b981"
+        />
 
-              <span className="absolute left-[80px] top-[92px] font-mono text-[8px] text-slate-600">
-                WORKS_ON
-              </span>
+        <circle
+          cx="358"
+          cy="205"
+          r="2.5"
+          fill="#10b981"
+        />
 
-              <span className="absolute left-[240px] top-[22px] font-mono text-[8px] text-slate-600">
-                USES
-              </span>
+        {/* Relationship labels */}
 
-              <span className="absolute left-[190px] top-[165px] font-mono text-[8px] text-slate-600">
-                PREFERS
-              </span>
-            </div>
-          </div>
+        <text
+          x="150"
+          y="122"
+          fill="rgba(100,116,139,0.8)"
+          fontSize="8"
+          fontFamily="monospace"
+          letterSpacing="0.5"
+        >
+          WORKS_ON
+        </text>
 
-          <p className="mt-5 text-center font-mono text-xs text-slate-600">
-            Live graph — entities and relationships
-          </p>
-        </div>
+        <text
+          x="315"
+          y="82"
+          fill="rgba(100,116,139,0.8)"
+          fontSize="8"
+          fontFamily="monospace"
+          letterSpacing="0.5"
+        >
+          USES
+        </text>
+
+        <text
+          x="235"
+          y="195"
+          fill="rgba(100,116,139,0.8)"
+          fontSize="8"
+          fontFamily="monospace"
+          letterSpacing="0.5"
+        >
+          PREFERS
+        </text>
+
+        {/* User node */}
+        <circle
+          cx="85"
+          cy="155"
+          r="31"
+          fill="#08110e"
+          stroke="rgba(16,185,129,0.38)"
+          strokeWidth="1"
+        />
+
+        <text
+          x="85"
+          y="158"
+          textAnchor="middle"
+          fill="#a7f3d0"
+          fontSize="10"
+          fontWeight="600"
+          fontFamily="monospace"
+        >
+          User
+        </text>
+
+        {/* Project node */}
+        <circle
+          cx="262"
+          cy="90"
+          r="31"
+          fill="#08110e"
+          stroke="rgba(16,185,129,0.38)"
+          strokeWidth="1"
+        />
+
+        <text
+          x="262"
+          y="93"
+          textAnchor="middle"
+          fill="#a7f3d0"
+          fontSize="10"
+          fontWeight="600"
+          fontFamily="monospace"
+        >
+          Project
+        </text>
+
+        {/* Technology node */}
+        <circle
+          cx="396"
+          cy="90"
+          r="35"
+          fill="#08110e"
+          stroke="rgba(16,185,129,0.38)"
+          strokeWidth="1"
+        />
+
+        <text
+          x="396"
+          y="93"
+          textAnchor="middle"
+          fill="#a7f3d0"
+          fontSize="10"
+          fontWeight="600"
+          fontFamily="monospace"
+        >
+          Technology
+        </text>
+
+        {/* JavaScript node */}
+        <circle
+          cx="400"
+          cy="205"
+          r="38"
+          fill="#08110e"
+          stroke="rgba(16,185,129,0.38)"
+          strokeWidth="1"
+        />
+
+        <text
+          x="400"
+          y="208"
+          textAnchor="middle"
+          fill="#a7f3d0"
+          fontSize="10"
+          fontWeight="600"
+          fontFamily="monospace"
+        >
+          JavaScript
+        </text>
+      </svg>
+    </div>
+  </div>
+
+  <p className="mt-5 text-center font-mono text-[11px] tracking-[0.08em] text-slate-600">
+    Live graph — entities and relationships
+  </p>
+</div>
       </div>
     </section>
   );

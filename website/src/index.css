@@ -1,7 +1,15 @@
 @import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap");
+
+:root {
+  --font-sans: "Inter", sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
 
 html {
   scroll-behavior: smooth;
+  font-family: var(--font-sans);
 }
 
 body {
@@ -9,4 +17,70 @@ body {
   min-width: 320px;
   background: #050807;
   color: white;
+  font-family: var(--font-sans);
+}
+
+.docs-shell {
+  background:
+    radial-gradient(
+      circle at 50% -10%,
+      rgba(16, 185, 129, 0.07),
+      transparent 35%
+    ),
+    linear-gradient(
+      rgba(255, 255, 255, 0.018) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.018) 1px,
+      transparent 1px
+    );
+  background-size:
+    auto,
+    40px 40px,
+    40px 40px;
+}
+
+h1,
+h2,
+h3,
+h4,
+a {
+  font-family: var(--font-display);
+}
+
+code,
+pre,
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.text-gradient-green {
+  display: inline-block;
+  background-image: linear-gradient(
+    135deg,
+    #4ade80 0%,
+    #22c55e 50%,
+    #86efac 100%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+.feature-card {
+  transition: border-color 0.2s ease, background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.feature-card:hover {
+  border-color: rgba(34, 197, 94, 0.3);
+  background-color: #0f1813;
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.06);
 }

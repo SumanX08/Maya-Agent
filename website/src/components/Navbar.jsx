@@ -12,13 +12,17 @@ function Navbar() {
         {/* Logo */}
         <Link
           to="/"
-          className="flex items-center gap-3"
+          className="flex items-center gap-1"
         >
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-emerald-400/30 bg-emerald-500/10 text-lg font-bold text-emerald-400 shadow-[0_0_25px_rgba(52,211,153,0.12)]">
-            λ
-          </div>
+          <div className="flex items-center justify-center">
+  <img
+    src="/maya-agent-logo.png"
+    alt="Maya-Agent"
+    className="h-10 w-10 object-contain"
+  />
+</div>
 
-          <span className="text-xl font-bold tracking-tight text-white">
+          <span className="text-xl font-bold tracking-tight text-white ">
             Maya-Agent
           </span>
         </Link>
@@ -57,7 +61,7 @@ function Navbar() {
           {/* Get Started */}
           <Link
             to="/docs"
-            className="flex items-center gap-2 rounded-lg bg-emerald-400 px-5 py-3 text-sm font-semibold text-[#04110b] transition hover:bg-emerald-300"
+            className="flex items-center gap-2 rounded-lg bg-[#22c55e] px-5 py-3 text-sm font-semibold text-[#04110b] transition hover:bg-emerald-300"
           >
             Get Started
             <ArrowUpRight size={16} />

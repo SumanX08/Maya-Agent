@@ -3,9 +3,13 @@ export default function Footer() {
     <footer className="border-t border-emerald-500/10 bg-[#050807] px-6 py-8">
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 md:flex-row">
         <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-emerald-500/25 bg-emerald-500/5 font-bold text-emerald-400">
-            λ
-          </div>
+          <div className="flex items-center justify-center">
+  <img
+    src="/maya-agent-logo.png"
+    alt="Maya-Agent"
+    className="h-10  w-10 object-contain"
+  />
+</div>
 
           <span className="font-semibold text-slate-300">
             Maya-Agent
@@ -21,11 +25,11 @@ export default function Footer() {
             Documentation
           </a>
 
-          <a href="#" className="transition hover:text-emerald-400">
+          <a href="https://github.com/SumanX08/Maya-Agent" className="transition hover:text-emerald-400">
             GitHub
           </a>
 
-          <a href="#" className="transition hover:text-emerald-400">
+          <a href="https://www.npmjs.com/package/maya-agent" className="transition hover:text-emerald-400">
             npm
           </a>
 

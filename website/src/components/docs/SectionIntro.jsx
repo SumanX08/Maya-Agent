@@ -4,18 +4,22 @@ export default function SectionIntro({
   description,
 }) {
   return (
-    <>
-      <p className="mb-4 font-mono text-xs tracking-[0.2em] text-emerald-400">
-        {label}
-      </p>
+    <header className="mb-12">
+      <div className="mb-5 flex items-center gap-3">
+        <span className="h-px w-8 bg-emerald-500/60" />
 
-      <h1 className="text-4xl font-bold tracking-tight md:text-5xl">
+        <p className="font-mono text-[11px] font-medium uppercase tracking-[0.25em] text-emerald-400">
+          {label}
+        </p>
+      </div>
+
+      <h1 className="font-display text-4xl font-bold tracking-[-0.03em] text-white md:text-5xl">
         {title}
       </h1>
 
-      <p className="mt-5 text-lg leading-8 text-slate-400">
+      <p className="mt-5 max-w-2xl text-[17px] leading-8 text-slate-400">
         {description}
       </p>
-    </>
+    </header>
   );
 }

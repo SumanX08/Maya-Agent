@@ -1,4 +1,5 @@
 import { BookOpen, ArrowUpRight, Box } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function CTA() {
   return (
@@ -15,7 +16,7 @@ export default function CTA() {
       <div className="relative mx-auto max-w-4xl text-center">
         <h2 className="text-5xl font-bold leading-tight text-white md:text-6xl">
           Start building with{" "}
-          <span className="text-emerald-400">Maya-Agent.</span>
+          <span className="text-gradient-green">Maya-Agent.</span>
         </h2>
 
         <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-slate-400">
@@ -31,10 +32,20 @@ export default function CTA() {
         </div>
 
         <div className="mt-10 flex flex-col justify-center gap-3 sm:flex-row">
+           <Link
+            to='/docs'
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#22c55e] px-6 py-3 text-sm font-semibold text-[#04100b] transition "
+          >
+            <BookOpen size={16} />
+            Read the Docs
+          </Link>
+
+          
+
 
 
           <a
-            href="#"
+            href="https://github.com/SumanX08/Maya-Agent"
             className="inline-flex items-center justify-center gap-2 rounded-xl border border-emerald-500/20 bg-[#0a1210] px-6 py-3 text-sm font-semibold text-slate-200 transition hover:border-emerald-400/40"
           >
             View on GitHub
@@ -42,7 +53,7 @@ export default function CTA() {
           </a>
 
           <a
-            href="#"
+            href="https://www.npmjs.com/package/maya-agent"
             className="inline-flex items-center justify-center gap-2 rounded-xl border border-emerald-500/20 px-6 py-3 text-sm font-semibold text-slate-400 transition hover:text-white"
           >
             <Box size={16} />

@@ -79,8 +79,8 @@ const Hero = () => {
           <div className="max-w-xl">
 
             {/* Badge */}
-            <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/[0.05] px-4 py-2 font-mono text-sm text-emerald-300">
-              <span className="h-2 w-2 rounded-full bg-emerald-400" />
+            <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/5 px-4 py-2 font-mono text-sm text-emerald-300">
+              <span className="h-2 w-2 rounded-full bg-green-400" />
               Open Source · JavaScript SDK
             </div>
 
@@ -89,9 +89,7 @@ const Hero = () => {
               Build AI Agents.
               <br />
 
-              <span className="bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
-                Own the Runtime.
-              </span>
+              <span className="text-gradient-green">Own the Runtime.</span>
             </h1>
 
             {/* Description */}
@@ -111,7 +109,7 @@ const Hero = () => {
 
               <a
                 href="#features"
-                className="group inline-flex items-center gap-2 rounded-xl bg-emerald-400 px-5 py-3 font-semibold text-[#06110b] transition hover:bg-emerald-300"
+                className="group inline-flex items-center gap-2 rounded-xl bg-[#22c55e] px-5 py-3 font-semibold text-[#06110b] transition hover:bg-emerald-300"
               >
                 Get Started
 
@@ -125,7 +123,7 @@ const Hero = () => {
                 href="https://github.com/SumanX08/Maya-Agent"
                 target="_blank"
                 rel="noreferrer"
-                className="group inline-flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/[0.04] px-5 py-3 font-semibold text-zinc-200 transition hover:border-emerald-400/40 hover:bg-emerald-500/[0.08]"
+                className="group inline-flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/4 px-5 py-3 font-semibold text-zinc-200 transition hover:border-emerald-400/40 hover:bg-emerald-500/8"
               >
                 View on GitHub
 
@@ -149,7 +147,7 @@ const Hero = () => {
           <div className="relative">
 
             {/* Panel Glow */}
-            <div className="absolute -inset-4 rounded-3xl bg-emerald-500/[0.03] blur-3xl" />
+            <div className="absolute -inset-4 rounded-3xl bg-emerald-500/3 blur-3xl" />
 
             <div className="relative overflow-hidden rounded-2xl border border-emerald-500/20 bg-[#08100d]/95 shadow-2xl">
 
@@ -177,14 +175,14 @@ const Hero = () => {
                     onClick={() => setActiveTab(tab)}
                     className={`relative px-4 py-3 font-mono text-xs transition ${
                       activeTab === tab
-                        ? "bg-emerald-500/[0.05] text-emerald-300"
+                        ? "bg-emerald-500/5 text-[#22c55e]"
                         : "text-zinc-600 hover:text-zinc-300"
                     }`}
                   >
                     {tab}
 
                     {activeTab === tab && (
-                      <span className="absolute bottom-0 left-0 h-[2px] w-full bg-emerald-400" />
+                      <span className="absolute bottom-0 left-0 h-0.5 w-full bg-[#22c55e]" />
                     )}
                   </button>
                 ))}
@@ -192,7 +190,7 @@ const Hero = () => {
               </div>
 
               {/* Code Area */}
-              <div className="relative min-h-[280px] overflow-x-auto p-5">
+              <div className="relative min-h-70 overflow-x-auto p-5">
 
                 {/* Copy Button */}
                 <button
@@ -217,7 +215,7 @@ const Hero = () => {
               <div className="flex items-center justify-between border-t border-emerald-500/10 px-5 py-3">
 
                 <div className="flex items-center gap-2 font-mono text-xs text-emerald-400">
-                  <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" />
+                  <span className="h-2 w-2 animate-pulse rounded-full bg-[#22c55e]" />
                   Runtime ready
                 </div>
 

@@ -18,7 +18,7 @@ import StructuredOutput from "./StructuredOutput";
 import Streaming from "./Streaming";
 import Tracing from "./Tracing";
 import Examples from "./Examples";
-import Agents from './AgentS'
+import Agents from './Agents'
 
 
 const pages = {
@@ -73,14 +73,26 @@ export default function Docs() {
 
   const activeSection = sectionNames[slug] || "Introduction";
 
-  const selectSection = (section) => {
+  const currentIndex = sections.indexOf(activeSection);
+
+  const previousSection =
+    currentIndex > 0 ? sections[currentIndex - 1] : null;
+
+  const nextSection =
+    currentIndex < sections.length - 1
+      ? sections[currentIndex + 1]
+      : null;
+
+  const getSlug = (section) => {
     const entry = Object.entries(sectionNames).find(
       ([, name]) => name === section
     );
 
-    if (!entry) return;
+    return entry ? entry[0] : "";
+  };
 
-    const [path] = entry;
+  const selectSection = (section) => {
+    const path = getSlug(section);
 
     navigate(path ? `/docs/${path}` : "/docs");
 
@@ -93,13 +105,13 @@ export default function Docs() {
   };
 
   return (
-    <div className="min-h-screen bg-[#060a09] text-white">
+    <div className="min-h-screen docs-shell bg-[#050807] text-white">
       <DocsHeader
         mobileOpen={mobileOpen}
         setMobileOpen={setMobileOpen}
       />
 
-      <div className="mx-auto flex max-w-7xl">
+      <div className="mx-auto flex max-w-375">
         <DocsSidebar
           sections={sections}
           activeSection={activeSection}
@@ -107,9 +119,54 @@ export default function Docs() {
           mobileOpen={mobileOpen}
         />
 
-        <main className="min-w-0 flex-1 px-6 py-12 md:px-12 lg:px-20">
-          <div className="mx-auto max-w-3xl">
+        <main className="min-w-0 flex-1">
+          <div className="mx-auto max-w-5xl  py-14 lg:py-12">
+            
+            {/* Breadcrumb */}
+            <div className="mb-6 flex items-center gap-2 text-sm text-slate-600">
+              <span>Maya-Agent</span>
+              <span>/</span>
+              <span className="text-slate-400">
+                {activeSection}
+              </span>
+            </div>
+
             <Page />
+
+            {/* Previous / Next */}
+            <div className="mt-20 grid gap-4 border-t border-white/10 pt-8 sm:grid-cols-2">
+              {previousSection ? (
+                <button
+                  onClick={() => selectSection(previousSection)}
+                  className="group rounded-xl border border-white/10 bg-white/2 p-5 text-left transition hover:border-emerald-500/30 hover:bg-emerald-500/3"
+                >
+                  <p className="text-xs text-slate-600">
+                    Previous
+                  </p>
+
+                  <p className="mt-2 text-sm font-medium text-slate-300 transition group-hover:text-emerald-400">
+                    ← {previousSection}
+                  </p>
+                </button>
+              ) : (
+                <div />
+              )}
+
+              {nextSection && (
+                <button
+                  onClick={() => selectSection(nextSection)}
+                  className="group rounded-xl border border-white/10 bg-white/2 p-5 text-right transition hover:border-emerald-500/30 hover:bg-emerald-500/3"
+                >
+                  <p className="text-xs text-slate-600">
+                    Next
+                  </p>
+
+                  <p className="mt-2 text-sm font-medium text-slate-300 transition group-hover:text-emerald-400">
+                    {nextSection} →
+                  </p>
+                </button>
+              )}
+            </div>
           </div>
         </main>
       </div>
