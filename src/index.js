@@ -57,6 +57,10 @@ export {
 } from "./workers/BackgroundWorkerManager.js";
 
 export {
+  GraphMaintenanceWorker
+} from "./workers/GraphMaintenanceWorker.js";
+
+export {
   RelationshipBuilderModel
 } from "./memory/RelationshipBuilderModel.js";
 
@@ -64,6 +68,8 @@ export {
   RelationshipBuilderSchema,
   RelationshipCandidateSchema
 } from "./memory/RelationshipSchema.js";
+
+
 
 export {
   RelationshipBuilderWorker

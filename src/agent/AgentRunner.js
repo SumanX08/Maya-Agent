@@ -8,114 +8,148 @@
       this.agent = agent;
     }
 
-    async stream(
-    input,
-    runId,
-    session
-  ) {
-    const {
-      instructions,
-      model,
-      tools,
-      eventBus,
-      outputSchema
-    } = this.agent;
+async stream(
+  input,
+  runId,
+  session
+) {
+  const {
+    instructions,
+    model,
+    tools,
+    eventBus,
+    outputSchema
+  } = this.agent;
 
-    session.addMessage({
-      role: "user",
-      content: input
+  session.addMessage({
+    role: "user",
+    content: input
+  });
+
+  const messages =
+    session.getMessages();
+
+  const streamStart = Date.now();
+
+  eventBus.emit("trace", {
+    runId,
+    agent: this.agent.name,
+    type: "stream.started",
+    timestamp: new Date().toISOString()
+  });
+
+  const stream =
+    await model.stream({
+      instructions,
+      messages,
+      tools: tools.map(tool =>
+        tool.toModelDefinition()
+      ),
+      outputSchema
     });
 
-    const messages =
-      session.getMessages();
+  let fullOutput = "";
 
-    const stream =
-      await model.stream({
-        instructions,
-        messages,
+  for await (const event of stream) {
+    let delta = null;
+    let completed = false;
 
-        tools: tools.map(tool =>
-          tool.toModelDefinition()
-        ),
+    // ------------------------------
+    // NORMALIZED MAYA EVENT
+    // ------------------------------
 
-        outputSchema
-      });
-
-    let fullOutput = "";
-
-    for await (
-      const event of stream
+    if (
+      event?.type === "text.delta"
     ) {
-
-      // ------------------------------
-      // TEXT DELTA
-      // ------------------------------
-
-      if (
-        event.type ===
-        "response.output_text.delta"
-      ) {
-
-        const delta =
-          event.delta || "";
-
-        fullOutput += delta;
-
-        eventBus.emit(
-          "run.stream",
-          {
-            runId,
-            agent:
-              this.agent.name,
-            type:
-              "text.delta",
-            delta
-          }
-        );
-      }
-
-      // ------------------------------
-      // COMPLETED
-      // ------------------------------
-
-      if (
-        event.type ===
-        "response.completed"
-      ) {
-
-        eventBus.emit(
-          "run.stream",
-          {
-            runId,
-            agent:
-              this.agent.name,
-            type:
-              "completed"
-          }
-        );
-      }
+      delta = event.delta || "";
     }
 
-    session.addMessage({
-      role: "assistant",
-      content: fullOutput
-    });
+    // ------------------------------
+    // OPENAI EVENTS
+    // ------------------------------
 
-    await this.agent.sessionStore.save(
-      session
-    );
+    else if (
+      event?.type ===
+      "response.output_text.delta"
+    ) {
+      delta = event.delta || "";
+    }
 
-    return {
-      runId,
-      agent:
-        this.agent.name,
-      sessionId:
-        session.id,
-      output:
-        fullOutput
-    };
+    else if (
+      event?.type ===
+      "response.completed"
+    ) {
+      completed = true;
+    }
+
+    // ------------------------------
+    // GEMINI CHUNKS
+    // ------------------------------
+
+    else if (
+      typeof event?.text === "string"
+    ) {
+      delta = event.text;
+    }
+
+    if (delta) {
+      fullOutput += delta;
+
+      eventBus.emit("run.stream", {
+        runId,
+        agent: this.agent.name,
+        type: "text.delta",
+        delta
+      });
+
+      eventBus.emit("trace", {
+        runId,
+        agent: this.agent.name,
+        type: "stream.delta",
+        delta,
+        timestamp: new Date().toISOString()
+      });
+    }
+
+    if (completed) {
+      eventBus.emit("run.stream", {
+        runId,
+        agent: this.agent.name,
+        type: "completed"
+      });
+    }
   }
 
+  eventBus.emit("run.stream", {
+    runId,
+    agent: this.agent.name,
+    type: "completed"
+  });
+
+  eventBus.emit("trace", {
+    runId,
+    agent: this.agent.name,
+    type: "stream.completed",
+    durationMs: Date.now() - streamStart,
+    timestamp: new Date().toISOString()
+  });
+
+  session.addMessage({
+    role: "assistant",
+    content: fullOutput
+  });
+
+  await this.agent.sessionStore.save(
+    session
+  );
+
+  return {
+    runId,
+    agent: this.agent.name,
+    sessionId: session.id,
+    output: fullOutput
+  };
+}
     async run(input, runId, session) {
       const {
         instructions,

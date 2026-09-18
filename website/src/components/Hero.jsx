@@ -7,43 +7,47 @@ import {
 } from "lucide-react";
 
 const codeExamples = {
-  "agent.js": `import { Agent } from 'maya-agent';
+  Agent: `import { Agent, OpenAIProvider } from 'maya-agent';
 
 const agent = new Agent({
   name: 'Maya',
   instructions: 'You are a helpful AI assistant.',
-  tools: [searchTool],
+  model: new OpenAIProvider(),
 });
 
-const result = await agent.run(
-  'Plan my next project'
-);`,
+await agent.run('Plan my next project');`,
 
-  "tools.js": `import { Tool } from 'maya-agent';
+  Tools: `import { Agent, OpenAIProvider } from 'maya-agent';
 
-const searchTool = new Tool({
-  name: 'search',
-  description: 'Search for information',
-
-  execute: async ({ query }) => {
-    return await search(query);
-  },
-});`,
-
-  "memory.js": `import { Session } from 'maya-agent';
-
-const session = new Session({
-  id: 'user-session-01',
+const agent = new Agent({
+  name: 'Maya',
+  instructions: 'You are a helpful AI assistant.',
+  model: new OpenAIProvider(),
+  tools: [searchTool,calculatorTool,weatherTool],
 });
 
-await agent.run(
-  'Remember my project idea',
-  { session }
-);`,
+await agent.run('Plan my trip');`,
+
+  Session: `import {Agent, OpenAIProvider, Session} from 'maya-agent';
+
+const session = new Session();
+
+const agent = new Agent({
+  name: 'Maya',
+  instructions: 'Remember our conversation.',
+  model: new OpenAIProvider(),
+  session,
+});
+
+await agent.run('My project is Maya-Agent.');
+const result = await agent.run('What is my project?');`,
+
+  
 };
 
+
 const Hero = () => {
-  const [activeTab, setActiveTab] = useState("agent.js");
+  const [activeTab, setActiveTab] = useState("Agent");
   const [copied, setCopied] = useState(false);
 
   const copyCode = async () => {

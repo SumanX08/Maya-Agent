@@ -1,4 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
+import { z } from "zod";
 import { ModelProvider } from "./ModelProvider.js";
 
 export class GeminiProvider extends ModelProvider {
@@ -19,12 +20,8 @@ export class GeminiProvider extends ModelProvider {
     });
   }
 
-  async generate({
-    instructions,
-    messages = [],
-    tools = []
-  }) {
-    const contents = messages
+  buildContents(messages = []) {
+    return messages
       .filter(
         message =>
           message.role === "user" ||
@@ -45,23 +42,46 @@ export class GeminiProvider extends ModelProvider {
           }
         ]
       }));
+  }
 
+  buildConfig(instructions, outputSchema = null) {
+    const config = {
+      systemInstruction: instructions
+    };
+
+    if (outputSchema) {
+      const jsonSchema = z.toJSONSchema(outputSchema, {
+        target: "draft-07"
+      });
+
+      delete jsonSchema.$schema;
+
+      config.responseMimeType = "application/json";
+      config.responseSchema = jsonSchema;
+    }
+
+    return config;
+  }
+
+  async generate({
+    instructions,
+    messages = [],
+    tools = [],
+    outputSchema = null
+  }) {
     const response =
       await this.client.models.generateContent({
         model: this.model,
-
-        contents,
-
-        config: {
-          systemInstruction: instructions
-        }
+        contents: this.buildContents(messages),
+        config: this.buildConfig(
+          instructions,
+          outputSchema
+        )
       });
 
     return {
       output: response.text,
 
-      // Keep Maya-Agent's provider contract consistent.
-      // Tool-call support can be added later.
       outputItems: [
         {
           type: "message",
@@ -83,5 +103,21 @@ export class GeminiProvider extends ModelProvider {
           }
         : undefined
     };
+  }
+
+  async stream({
+    instructions,
+    messages = [],
+    tools = [],
+    outputSchema = null
+  }) {
+    return this.client.models.generateContentStream({
+      model: this.model,
+      contents: this.buildContents(messages),
+      config: this.buildConfig(
+        instructions,
+        outputSchema
+      )
+    });
   }
 }
