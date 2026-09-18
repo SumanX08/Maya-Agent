@@ -76,6 +76,10 @@ export {
 } from "./workers/RelationshipBuilderWorker.js";
 
 export {
+  GraphMaintenanceWorker
+} from "./workers/GraphMaintenanceWorker.js";
+
+export {
   GraphRetriever
 } from "./memory/GraphRetriever.js";
 
