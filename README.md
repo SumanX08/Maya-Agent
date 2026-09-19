@@ -2,45 +2,85 @@
 
 An open-source AI Agent SDK built from scratch with JavaScript.
 
-Maya-Agent provides a modular foundation for building AI agents with:
+Maya-Agent provides a modular runtime for building AI agents with:
 
-- 🤖 LLM-powered agents
-- 🛠️ Function calling and tools
-- 💬 Session memory
-- 🧠 Long-term graph memory
-- 🔗 Automatic relationship building
-- 🛡️ Input, output, and tool guardrails
-- 📦 Structured outputs with Zod
-- 🔄 Retries and timeouts
-- 🔀 Multi-agent handoffs
-- 🌊 Streaming responses
-- 📊 Event-based tracing
-- ⚙️ Background workers
+- LLM-powered agents
+- Function calling and tools
+- Session memory
+- Long-term graph memory
+- Automatic memory extraction
+- Relationship building
+- Input, tool, and output guardrails
+- Structured outputs with Zod
+- Retries and timeouts
+- Multi-agent handoffs
+- Streaming responses
+- Event-based tracing
+- Background graph workers
+- OpenAI and Gemini providers
 
-The project is designed to be simple, extensible, and easy to understand.
+The project is designed to keep the core agent runtime understandable, modular, and extensible.
 
----
+## Installation
 
-## Features
+```bash
+npm install maya-agent
+```
 
-### 🤖 Agent Execution
+For tools and structured output, install Zod in your application:
 
-Create and run AI agents with instructions, models, tools, memory, guardrails, and background workers.
+```bash
+npm install zod
+```
+
+## Quick Start
 
 ```js
+import "dotenv/config";
 import {
   Agent,
-  OpenAIProvider
-} from "./src/index.js";
+  OpenAIProvider,
+} from "maya-agent";
 
 const model = new OpenAIProvider({
-  model: "gpt-4.1-mini"
+  model: "gpt-4.1-mini",
 });
 
 const agent = new Agent({
   name: "Assistant",
   instructions: "You are a helpful AI assistant.",
-  model
+  model,
+});
+
+const result = await agent.run(
+  "Explain what an AI agent is in one sentence."
+);
+
+console.log(result.output);
+```
+
+## Features
+
+### Agent Execution
+
+Create and run agents with instructions, models, tools, memory, guardrails, handoffs, and background workers.
+
+```js
+import {
+  Agent,
+  OpenAIProvider,
+} from "maya-agent";
+
+const model = new OpenAIProvider({
+  model: "gpt-4.1-mini",
+});
+
+const agent = new Agent({
+  name: "Assistant",
+  instructions: "You are a helpful AI assistant.",
+  model,
+  maxSteps: 10,
+  timeoutMs: 15000,
 });
 
 const result = await agent.run(
@@ -50,211 +90,219 @@ const result = await agent.run(
 console.log(result.output);
 ```
 
----
+A run returns information including the run ID, agent name, session ID, output, usage, and messages.
 
-## 🛠️ Tools
+## Tools
 
 Maya-Agent supports function calling through validated tools.
 
-Tools use Zod schemas for input validation.
+Tools can be created with the `tool()` helper and a Zod input schema:
 
 ```js
-import { Tool } from "./src/index.js";
+import { tool } from "maya-agent";
 import { z } from "zod";
 
-const weatherTool = new Tool({
-  name: "getWeather",
-
-  description:
-    "Get the weather for a city.",
-
+const calculator = tool({
+  name: "calculator",
+  description: "Add two numbers together.",
   schema: z.object({
-    city: z.string()
+    a: z.number(),
+    b: z.number(),
   }),
-
-  execute: async ({ city }) => {
-    return {
-      city,
-      temperature: "28°C"
-    };
-  }
+  execute: async ({ a, b }) => {
+    return a + b;
+  },
 });
 ```
 
-Add the tool to an agent:
+Add tools to an agent:
 
 ```js
 const agent = new Agent({
-  name: "WeatherAgent",
-
-  instructions:
-    "You are a helpful weather assistant.",
-
+  name: "Calculator",
+  instructions: "Use the calculator for arithmetic.",
   model,
-
-  tools: [
-    weatherTool
-  ]
+  tools: [calculator],
 });
+
+const result = await agent.run(
+  "What is 127 + 358?"
+);
+
+console.log(result.output);
 ```
 
----
+The agent can expose the configured tools to the model, execute tool calls, and continue the agent loop with the tool result.
 
-## 💬 Session Memory
+## Session Memory
 
 Sessions store conversation history for an agent.
 
+The simplest way to create a session is through the agent:
+
 ```js
-import { Session } from "./src/index.js";
+const session = agent.createSession();
 
-const session = new Session();
-
-session.addMessage({
-  role: "user",
-  content: "Hello!"
-});
-
-console.log(
-  session.getMessages()
+await agent.run(
+  "My name is Suman.",
+  { session }
 );
+
+const result = await agent.run(
+  "What is my name?",
+  { session }
+);
+
+console.log(result.output);
 ```
 
-Maya-Agent also includes:
+The same session can be reused across multiple runs.
+
+Maya-Agent also provides session stores:
 
 ```js
 import {
   InMemorySessionStore,
-  FileSessionStore
-} from "./src/index.js";
+  FileSessionStore,
+} from "maya-agent";
 ```
 
----
+`InMemorySessionStore` keeps sessions in memory, while `FileSessionStore` provides file-backed session storage.
 
-## 🧠 Graph Memory
+## Graph Memory
 
-Maya-Agent supports long-term memory using a graph database.
+Maya-Agent supports long-term memory using a graph database such as Neo4j.
 
-The graph can store:
-
-- Entities
-- Technologies
-- Projects
-- People
-- Relationships
-
-Example:
+Graph memory can represent entities and relationships such as:
 
 ```text
 Suman
-  │
+  |
   └── WORKS_ON ──> Maya-Agent
-                        │
-                        ├── USES ──> Node.js
-                        │
-                        └── USES ──> Neo4j
+                       |
+                       ├── USES ──> Node.js
+                       |
+                       └── USES ──> Neo4j
 ```
 
-### Setup Graph Memory
+### Connect to Neo4j
+
+Configure:
+
+```env
+NEO4J_URI=your_neo4j_uri
+NEO4J_USERNAME=your_username
+NEO4J_PASSWORD=your_password
+NEO4J_DATABASE=neo4j
+```
+
+Then:
 
 ```js
 import {
   GraphClient,
-  GraphMemory
-} from "./src/index.js";
+  GraphMemory,
+} from "maya-agent";
 
-const graph = new GraphClient();
+const client = new GraphClient();
 
-const graphMemory =
-  new GraphMemory(graph);
-```
+await client.connect();
 
-Attach graph memory to an agent:
-
-```js
-const agent = new Agent({
-  name: "MemoryAgent",
-
-  instructions:
-    "You are a helpful assistant.",
-
-  model,
-
-  memory: graphMemory
+const memory = new GraphMemory({
+  client,
 });
 ```
 
----
+### Store a fact
 
-## 🧠 Automatic Memory Extraction
+```js
+await memory.rememberFact({
+  subject: {
+    id: "suman",
+    name: "Suman",
+    type: "Person",
+  },
+  relation: "WORKS_ON",
+  object: {
+    id: "maya-agent",
+    name: "Maya-Agent",
+    type: "Project",
+  },
+});
+```
 
-Background workers can extract entities and relationships from conversations.
+Retrieve connected context:
+
+```js
+const context = await memory.getNeighborhood("suman");
+
+console.log(context);
+```
+
+## Automatic Memory Extraction
+
+Maya-Agent includes a background worker that can extract entities and relationships from completed agent runs.
+
+The extraction pipeline can produce entities such as:
+
+```text
+Suman
+Maya-Agent
+```
+
+and relationships such as:
+
+```text
+Suman --WORKS_ON--> Maya-Agent
+```
+
+The worker is built from a memory extraction model and graph memory:
 
 ```js
 import {
   MemoryExtractionModel,
-  MemoryExtractionWorker
-} from "./src/index.js";
+  MemoryExtractionWorker,
+} from "maya-agent";
 
-const extractionModel =
-  new MemoryExtractionModel({
-    model
-  });
-
-const memoryWorker =
-  new MemoryExtractionWorker({
-    extractionModel,
-    graphMemory,
-    eventBus
-  });
-```
-
-Attach the worker:
-
-```js
-const agent = new Agent({
-  name: "MemoryAgent",
-
-  instructions:
-    "You are a helpful assistant.",
-
+const extractionModel = new MemoryExtractionModel({
   model,
+});
 
+const memoryWorker = new MemoryExtractionWorker({
+  extractionModel,
+  graphMemory,
   eventBus,
-
-  backgroundWorkers: [
-    memoryWorker
-  ]
 });
 ```
 
-Example extracted memory:
+Attach background workers to an agent:
 
-```text
-Maya-Agent --USES--> Node.js
-Maya-Agent --USES--> Neo4j
+```js
+const agent = new Agent({
+  name: "Knowledge Assistant",
+  instructions: "You are a helpful assistant.",
+  model,
+  eventBus,
+  backgroundWorkers: [
+    memoryWorker,
+  ],
+});
 ```
 
----
+## Relationship Builder
 
-## 🔗 Relationship Builder
-
-Maya-Agent can analyze existing graph knowledge and infer additional relationships.
+The relationship builder analyzes existing graph context and can create additional relationships when they meet the configured criteria.
 
 For example:
 
 ```text
 Suman --WORKS_ON--> Maya-Agent
-
 Maya-Agent --USES--> Node.js
 ```
 
-The relationship builder may infer:
+can provide context for discovering another relationship between Suman and Node.js.
 
-```text
-Suman --USES--> Node.js
-```
-
-Relationship candidates can include:
+The relationship builder works with relationship candidates containing information such as:
 
 - Source entity
 - Target entity
@@ -262,469 +310,480 @@ Relationship candidates can include:
 - Confidence
 - Reason
 
-Maya-Agent also avoids creating duplicate relationships.
+Duplicate relationships are avoided.
 
----
+## Graph Maintenance
 
-## 🧹 Graph Maintenance
-
-Graph relationships can be maintained in the background.
+Graph maintenance can run in the background after relationship building.
 
 Maintenance can:
 
 - Scan existing relationships
-- Update confidence scores
+- Update relationship metadata
 - Remove outdated relationships
 - Track maintenance timestamps
 - Skip relationships that do not require updates
 
-Example:
+A maintenance run reports information such as:
 
 ```text
-relationshipsScanned: 5
-relationshipsUpdated: 2
-relationshipsRemoved: 0
-relationshipsSkipped: 3
+relationshipsScanned
+relationshipsUpdated
+relationshipsRemoved
+relationshipsSkipped
 ```
 
----
+## Guardrails
 
-## 🛡️ Guardrails
+Maya-Agent supports guardrails at multiple stages:
 
-Maya-Agent supports guardrails at multiple stages.
+- Input guardrails
+- Tool guardrails
+- Output guardrails
 
-### Input Guardrails
-
-Validate user input before the model is called.
+Create a guardrail:
 
 ```js
-import { Guardrail } from "./src/index.js";
+import { Guardrail } from "maya-agent";
 
-const noEmptyInput =
-  new Guardrail({
-    name: "no-empty-input",
-
-    validate: ({ input }) => {
-      return {
-        passed:
-          input.trim().length > 0,
-
-        message:
-          "Input cannot be empty."
-      };
-    }
-  });
+const noEmptyInput = new Guardrail({
+  name: "no-empty-input",
+  validate: ({ input }) => {
+    return {
+      passed: input.trim().length > 0,
+      message: "Input cannot be empty.",
+    };
+  },
+});
 ```
 
-### Output Guardrails
-
-Validate the model response before returning it.
-
-Output guardrails can be used to:
-
-- Block unwanted responses
-- Validate formatting
-- Enforce application rules
-- Filter unsafe output
-
-### Tool Guardrails
-
-Validate tool execution before a tool runs.
+Attach it to an agent:
 
 ```js
-const dangerousToolGuardrail =
-  new Guardrail({
-    name:
-      "block-dangerous-tools",
-
-    validate: ({ tool }) => {
-      if (
-        tool.name === "deleteData"
-      ) {
-        return {
-          passed: false,
-
-          message:
-            "Dangerous tool execution requires approval."
-        };
-      }
-
-      return {
-        passed: true
-      };
-    }
-  });
+const agent = new Agent({
+  name: "Safe Assistant",
+  instructions: "You are a helpful assistant.",
+  model,
+  guardrails: {
+    input: [noEmptyInput],
+  },
+});
 ```
 
----
+A failed guardrail stops the relevant execution path and raises a `GuardrailError`.
 
-## 📦 Structured Output
+## Structured Output
 
 Maya-Agent supports structured model responses using Zod schemas.
 
 ```js
 import { z } from "zod";
 
-const outputSchema =
-  z.object({
-    answer: z.string(),
-
-    confidence:
-      z.number()
-        .min(0)
-        .max(1),
-
-    topics:
-      z.array(
-        z.string()
-      )
-  });
-```
-
-Use it with an agent:
-
-```js
-const agent = new Agent({
-  name: "ResearchAgent",
-
-  instructions:
-    "You are a research assistant.",
-
-  model,
-
-  outputSchema
+const profileSchema = z.object({
+  name: z.string(),
+  role: z.string(),
+  experience_years: z.number(),
 });
 ```
 
-Example result:
+Use the schema with an agent:
 
 ```js
-{
-  answer:
-    "An AI agent is a system that can perceive, reason, and act toward a goal.",
+const agent = new Agent({
+  name: "Profile Extractor",
+  instructions: "Extract the person's professional profile.",
+  model,
+  outputSchema: profileSchema,
+});
 
-  confidence: 0.95,
+const result = await agent.run(
+  "My name is Suman. I am a software engineer with 2 years of experience."
+);
 
-  topics: [
-    "Artificial Intelligence",
-    "AI Agents",
-    "Autonomous Systems"
-  ]
-}
+console.log(result.output);
 ```
 
-The final model response is validated against the provided Zod schema.
+The SDK validates the structured response against the supplied Zod schema and can raise `OutputValidationError` when validation fails.
 
----
+Structured output has been tested with both OpenAI and Gemini providers.
 
-## 🔄 Reliability
+## Reliability
 
-Maya-Agent includes retry support for failed model calls.
+Maya-Agent provides retry and timeout support for model execution.
+
+### Retry Policy
 
 ```js
-import {
-  RetryPolicy
-} from "./src/index.js";
+import { RetryPolicy } from "maya-agent";
 
-const retryPolicy =
-  new RetryPolicy({
-    maxAttempts: 3,
+const retryPolicy = new RetryPolicy({
+  maxAttempts: 3,
+  initialDelay: 500,
+  backoffMultiplier: 2,
+});
+```
 
-    initialDelay: 500,
+The policy can be passed to an agent:
 
-    backoffMultiplier: 2
-  });
+```js
+const agent = new Agent({
+  name: "Reliable Assistant",
+  instructions: "You are a helpful assistant.",
+  model,
+  retryPolicy,
+});
 ```
 
 Example retry behavior:
 
 ```text
-Attempt 1 → Failed
-
+Attempt 1 -> Failed
 Wait 500ms
-
-Attempt 2 → Failed
-
+Attempt 2 -> Failed
 Wait 1000ms
-
-Attempt 3 → Success
+Attempt 3 -> Success
 ```
 
----
+### Timeouts
 
-## ⏱️ Timeouts
-
-Model calls can be protected using timeouts.
+Protect model calls with a timeout:
 
 ```js
 const agent = new Agent({
-  name: "ReliableAgent",
-
-  instructions:
-    "You are a helpful assistant.",
-
+  name: "Reliable Assistant",
+  instructions: "You are a helpful assistant.",
   model,
-
-  timeoutMs: 10000
+  timeoutMs: 10000,
 });
 ```
 
-If the model does not respond within the configured timeout, the request can fail or retry according to the configured retry policy.
+Retries and timeouts can be combined to make model execution more resilient to transient failures.
 
----
+## Agent Handoffs
 
-## 🔀 Agent Handoffs
-
-Agents can transfer tasks to specialized agents.
-
-Example:
+Agents can transfer work to specialized agents.
 
 ```text
 SupportAgent
-      │
-      │ Billing issue
-      ▼
+     |
+     | Billing issue
+     v
 BillingAgent
 ```
 
+Configure a target agent:
+
 ```js
-const supportAgent =
-  new Agent({
-    name: "SupportAgent",
+const billingAgent = new Agent({
+  name: "Billing Specialist",
+  instructions: "Handle billing and payment issues.",
+  model,
+});
 
-    instructions:
-      "Handle general support requests.",
-
-    model,
-
-    handoffs: [
-      billingAgent
-    ]
-  });
+const supportAgent = new Agent({
+  name: "Support Assistant",
+  instructions:
+    "Handle support requests and delegate billing issues.",
+  model,
+  handoffs: [billingAgent],
+});
 ```
 
-The handoff system tracks:
+Run the source agent:
 
-- Run ID
-- Source agent
-- Target agent
-- Handoff reason
-- Handoff count
+```js
+const result = await supportAgent.run(
+  "I was charged twice for my subscription."
+);
 
----
+console.log(result.output);
+```
 
-## 🌊 Streaming
+Maya-Agent tracks handoff execution and enforces a configurable maximum handoff count.
 
-Maya-Agent supports streaming model responses.
+## Streaming
 
-Streaming allows applications to display responses progressively instead of waiting for the complete response.
-
-This is useful for:
-
-- Chat applications
-- CLI agents
-- Real-time interfaces
-- Long model responses
-
----
-
-## 📊 Tracing
-
-Maya-Agent includes event-based tracing for observing agent execution.
+Maya-Agent supports incremental text streaming through the provider abstraction.
 
 ```js
 import {
-  TraceCollector
-} from "./src/index.js";
+  Agent,
+  OpenAIProvider,
+  EventBus,
+} from "maya-agent";
 
-const tracer =
-  new TraceCollector();
+const eventBus = new EventBus();
+
+eventBus.on("run.stream", (event) => {
+  if (event.type === "text.delta") {
+    process.stdout.write(event.delta);
+  }
+});
+
+const agent = new Agent({
+  name: "Streaming Assistant",
+  instructions: "You are a concise helpful assistant.",
+  model: new OpenAIProvider({
+    model: "gpt-4.1-mini",
+  }),
+  eventBus,
+});
+
+const result = await agent.stream(
+  "Explain how an AI agent works."
+);
+
+console.log("\n\nComplete response:");
+console.log(result.output);
 ```
 
-Example trace events:
+Streaming has been tested with OpenAI and Gemini providers.
+
+Gemini uses its streaming generation API through `GeminiProvider`:
+
+```js
+import { GeminiProvider } from "maya-agent";
+
+const model = new GeminiProvider({
+  model: "gemini-3.6-flash",
+});
+```
+
+The runtime normalizes provider-specific streamed text into `run.stream` events.
+
+## Providers
+
+Maya-Agent uses a provider abstraction so the agent runtime is not tied to one model vendor.
+
+### OpenAI
+
+```js
+import { OpenAIProvider } from "maya-agent";
+
+const model = new OpenAIProvider({
+  model: "gpt-4.1-mini",
+});
+```
+
+Set:
+
+```env
+OPENAI_API_KEY=your_openai_api_key
+```
+
+### Gemini
+
+```js
+import { GeminiProvider } from "maya-agent";
+
+const model = new GeminiProvider({
+  model: "gemini-3.6-flash",
+});
+```
+
+Set:
+
+```env
+GEMINI_API_KEY=your_gemini_api_key
+```
+
+Both providers implement the common `ModelProvider` interface used by the agent runtime.
+
+## Tracing
+
+Maya-Agent includes event-based tracing for observing agent execution.
+
+Create a trace collector from the same EventBus used by the agent:
+
+```js
+import {
+  EventBus,
+  TraceCollector,
+} from "maya-agent";
+
+const eventBus = new EventBus();
+
+const traces = new TraceCollector({
+  eventBus,
+});
+```
+
+Attach the EventBus to the agent:
+
+```js
+const agent = new Agent({
+  name: "Tracing Assistant",
+  instructions: "You are a helpful assistant.",
+  model,
+  eventBus,
+});
+```
+
+After a run:
+
+```js
+const result = await agent.run(
+  "Explain retrieval augmented generation."
+);
+
+const trace = traces.getRun(result.runId);
+
+console.dir(trace, {
+  depth: null,
+});
+```
+
+Trace events can include:
 
 ```text
 model.started
 model.completed
 tool.started
 tool.completed
+stream.started
+stream.delta
+stream.completed
+run.retry
 ```
 
-Example trace:
+TraceCollector also provides:
 
 ```js
-{
-  runId:
-    "14d2ce57-07d5-46d7-b05a-8c059ec0ebb9",
-
-  agent:
-    "TracingAgent",
-
-  type:
-    "model.completed",
-
-  step: 0,
-
-  durationMs: 33834,
-
-  usage: {
-    input_tokens: 24,
-    output_tokens: 100,
-    total_tokens: 124
-  }
-}
+traces.getRun(runId);
+traces.clearRun(runId);
+traces.clear();
+traces.destroy();
 ```
 
----
+## Event System
 
-## ⚙️ Event System
-
-Maya-Agent uses an event-driven architecture.
+Maya-Agent uses an EventBus for runtime lifecycle events.
 
 ```js
-import {
-  EventBus
-} from "./src/index.js";
+import { EventBus } from "maya-agent";
 
-const eventBus =
-  new EventBus();
+const eventBus = new EventBus();
+
+eventBus.on("run.completed", (event) => {
+  console.log(
+    "Agent run completed:",
+    event.runId
+  );
+});
 ```
 
-Listen for events:
+Events are used by tracing, handoffs, streaming, and background workers.
 
-```js
-eventBus.on(
-  "run.completed",
-
-  event => {
-    console.log(
-      "Agent run completed:",
-      event.runId
-    );
-  }
-);
-```
-
-Example events include:
+Examples include:
 
 ```text
+run.started
 run.completed
+run.failed
 run.retry
-guardrail.triggered
+run.stream
+handoff.started
+handoff.completed
+memory.extraction.started
 memory.extraction.completed
 relationship.building.started
 relationship.building.completed
+graph.maintenance.started
+graph.maintenance.completed
 ```
 
----
-
-## 🏗️ Architecture
+## Architecture
 
 ```text
-                ┌───────────────┐
-                │     Agent     │
-                └───────┬───────┘
-                        │
-                        ▼
-                ┌───────────────┐
-                │  AgentRunner  │
-                └───────┬───────┘
-                        │
-          ┌─────────────┼─────────────┐
-          │             │             │
-          ▼             ▼             ▼
-     Guardrails      Model         Memory
-          │             │             │
-          │             │             ▼
-          │             │       Graph Memory
-          │             │             │
-          ▼             ▼             ▼
-        Tools      Tool Calls    Background Workers
-                        │
-                        ▼
-                  Final Response
+                    Agent
+                      |
+                      v
+                 AgentRunner
+                      |
+        +-------------+-------------+
+        |             |             |
+        v             v             v
+    Guardrails      Model         Memory
+        |             |             |
+        |             |             v
+        |             |        Graph Memory
+        |             |             |
+        v             v             v
+      Tools       Tool Calls   Background Workers
+                      |
+                      v
+                Final Response
 ```
 
----
+The runtime is intentionally split into small components so each part can be understood and extended independently.
 
-## 📁 Project Structure
+## Project Structure
 
 ```text
 Maya-Agent
-│
-├── examples
-│   ├── basic.js
-│   ├── agent-memory.js
-│   ├── guardrails.js
-│   ├── structured-output.js
-│   ├── reliability.js
-│   ├── handoffs.js
-│   └── tracing.js
-│
-├── src
-│   │
-│   ├── agent
-│   │   ├── Agent.js
-│   │   └── AgentRunner.js
-│   │
-│   ├── errors
-│   │   ├── GuardrailError.js
-│   │   └── OutputValidationError.js
-│   │
-│   ├── events
-│   │   └── EventBus.js
-│   │
-│   ├── graph
-│   │   └── GraphClient.js
-│   │
-│   ├── guardrails
-│   │   └── Guardrail.js
-│   │
-│   ├── handoffs
-│   │   └── HandoffManager.js
-│   │
-│   ├── memory
-│   │   ├── Session.js
-│   │   ├── SessionStore.js
-│   │   ├── FileSessionStore.js
-│   │   ├── GraphMemory.js
-│   │   ├── GraphRetriever.js
-│   │   ├── MemoryExtractionModel.js
-│   │   └── RelationshipBuilderModel.js
-│   │
-│   ├── models
-│   │   ├── ModelProvider.js
-│   │   └── OpenAIProvider.js
-│   │
-│   ├── reliability
-│   │   ├── RetryPolicy.js
-│   │   └── withTimeout.js
-│   │
-│   ├── tools
-│   │   ├── Tool.js
-│   │   └── Tools.js
-│   │
-│   ├── tracing
-│   │   └── TraceCollector.js
-│   │
-│   ├── workers
-│   │   ├── MemoryExtractionWorker.js
-│   │   ├── RelationshipBuilderWorker.js
-│   │   └── BackgroundWorkerManager.js
-│   │
-│   └── index.js
-│
-├── tests
-│
-├── .env
-├── .gitignore
-├── package.json
-└── README.md
+|
++-- examples
+|
++-- src
+|   |
+|   +-- agent
+|   |   +-- Agent.js
+|   |   +-- AgentRunner.js
+|   |
+|   +-- errors
+|   |   +-- GuardrailError.js
+|   |   +-- OutputValidationError.js
+|   |
+|   +-- events
+|   |   +-- EventBus.js
+|   |
+|   +-- graph
+|   |   +-- GraphClient.js
+|   |
+|   +-- guardrails
+|   |   +-- Guardrail.js
+|   |
+|   +-- handoffs
+|   |   +-- HandoffManager.js
+|   |
+|   +-- memory
+|   |   +-- Session.js
+|   |   +-- SessionStore.js
+|   |   +-- FileSessionStore.js
+|   |   +-- GraphMemory.js
+|   |   +-- GraphRetriever.js
+|   |   +-- MemoryExtractionModel.js
+|   |   +-- MemorySchema.js
+|   |   +-- RelationshipBuilderModel.js
+|   |
+|   +-- models
+|   |   +-- ModelProvider.js
+|   |   +-- OpenAIProvider.js
+|   |   +-- GeminiProvider.js
+|   |
+|   +-- reliability
+|   |   +-- RetryPolicy.js
+|   |   +-- withTimeout.js
+|   |
+|   +-- tools
+|   |   +-- Tool.js
+|   |   +-- Tools.js
+|   |
+|   +-- tracing
+|   |   +-- TraceCollector.js
+|   |
+|   +-- workers
+|       +-- BackgroundWorkerManager.js
+|       +-- MemoryExtractionWorker.js
+|       +-- RelationshipBuilderWorker.js
+|       +-- GraphMaintenanceWorker.js
+|
++-- tests
++-- package.json
++-- README.md
 ```
 
----
-
-## Installation
+## Installation from Source
 
 Clone the repository:
 
@@ -744,48 +803,30 @@ Install dependencies:
 npm install
 ```
 
----
-
 ## Environment Variables
 
-Create a `.env` file:
+For OpenAI:
 
 ```env
 OPENAI_API_KEY=your_openai_api_key
 ```
 
-For graph memory, configure Neo4j:
+For Gemini:
+
+```env
+GEMINI_API_KEY=your_gemini_api_key
+```
+
+For Neo4j graph memory:
 
 ```env
 NEO4J_URI=your_neo4j_uri
 NEO4J_USERNAME=your_username
 NEO4J_PASSWORD=your_password
+NEO4J_DATABASE=neo4j
 ```
 
----
-
-## Running an Example
-
-```bash
-node examples/basic.js
-```
-
-Example output:
-
-```text
-[Agent] Step 1
-
-Agent: Assistant
-
-Response:
-
-An AI agent is a computer program that can observe,
-make decisions, and take actions to achieve a goal.
-```
-
----
-
-## Testing
+## Running Tests
 
 Run the test suite:
 
@@ -793,77 +834,53 @@ Run the test suite:
 npm test
 ```
 
-The current test suite covers core functionality including:
+The SDK's core tests cover functionality including:
 
+- Agent execution
 - Tools
 - Tool validation
 - Sessions
 - EventBus
 - Guardrails
 - Retry policies
-
-Example output:
-
-```text
-✔ EventBus calls registered listener
-✔ EventBus supports multiple listeners
-✔ Guardrail passes when validation succeeds
-✔ Guardrail fails when validation fails
-✔ RetryPolicy retries after failure
-✔ Session stores messages
-✔ Tool executes with valid input
-
-pass
-```
-
----
+- Handoffs
+- Memory components
+- Provider behavior
 
 ## Core Exports
 
-Maya-Agent currently exports:
+Maya-Agent exports the main runtime components from the package entry point:
 
 ```js
-export {
+import {
   Agent,
-  ModelProvider,
-  OpenAIProvider,
-
-  Tool,
-  tool,
-
+  BackgroundWorkerManager,
   EventBus,
-
-  Session,
-  InMemorySessionStore,
   FileSessionStore,
-
+  GeminiProvider,
   GraphClient,
   GraphMemory,
   GraphRetriever,
-
-  MemoryExtractionModel,
-  MemoryExtractionWorker,
-
-  BackgroundWorkerManager,
-
-  RelationshipBuilderModel,
-  RelationshipBuilderWorker,
-
   Guardrail,
   GuardrailError,
-
-  OutputValidationError,
-
-  RetryPolicy,
-  withTimeout,
-
   HandoffManager,
-
-  TraceCollector
-};
+  InMemorySessionStore,
+  MemoryExtractionModel,
+  MemoryExtractionWorker,
+  ModelProvider,
+  OpenAIProvider,
+  OutputValidationError,
+  RelationshipBuilderModel,
+  RelationshipBuilderWorker,
+  RetryPolicy,
+  Session,
+  Tool,
+  TraceCollector,
+  tool,
+  withTimeout,
+  GraphMaintenanceWorker,
+} from "maya-agent";
 ```
-
----
 
 ## Complete Agent Example
 
@@ -873,50 +890,35 @@ import "dotenv/config";
 import {
   Agent,
   OpenAIProvider,
-  EventBus
-} from "../src/index.js";
+  EventBus,
+} from "maya-agent";
 
-const eventBus =
-  new EventBus();
+const eventBus = new EventBus();
 
-const model =
-  new OpenAIProvider({
-    model: "gpt-4.1-mini"
-  });
+const model = new OpenAIProvider({
+  model: "gpt-4.1-mini",
+});
 
-const agent =
-  new Agent({
-    name: "Maya",
+const agent = new Agent({
+  name: "Maya",
+  instructions: "You are a helpful AI assistant.",
+  model,
+  eventBus,
+  maxSteps: 10,
+  timeoutMs: 15000,
+  retryPolicy: {
+    maxAttempts: 3,
+    initialDelay: 500,
+    backoffMultiplier: 2,
+  },
+});
 
-    instructions:
-      "You are a helpful AI assistant.",
-
-    model,
-
-    eventBus,
-
-    maxSteps: 10,
-
-    timeoutMs: 15000,
-
-    retryPolicy: {
-      maxAttempts: 3,
-      initialDelay: 500,
-      backoffMultiplier: 2
-    }
-  });
-
-const result =
-  await agent.run(
-    "Explain what an AI agent is."
-  );
-
-console.log(
-  result.output
+const result = await agent.run(
+  "Explain what an AI agent is."
 );
-```
 
----
+console.log(result.output);
+```
 
 ## Goals
 
@@ -933,58 +935,63 @@ Key goals:
 - Make the implementation easy to learn from
 - Build an open-source foundation for future development
 
----
-
 ## Roadmap
 
-Future improvements may include:
+Potential future improvements include:
 
-- [ ] More model providers
-- [ ] Persistent production-grade memory
-- [ ] Advanced graph retrieval
-- [ ] Better context management
-- [ ] Parallel tool execution
-- [ ] Tool approval workflows
-- [ ] Advanced multi-agent orchestration
-- [ ] Agent planning
-- [ ] Evaluation framework
-- [ ] OpenTelemetry support
-- [ ] More streaming capabilities
-- [ ] Plugin system
-- [ ] CLI support
-- [ ] Additional test coverage
-
----
+- More model providers
+- Persistent production-grade memory
+- Advanced graph retrieval
+- Better context management
+- Parallel tool execution
+- Tool approval workflows
+- Advanced multi-agent orchestration
+- Agent planning
+- Evaluation framework
+- OpenTelemetry support
+- More streaming capabilities
+- Plugin system
+- CLI support
+- Additional test coverage
 
 ## Why Maya-Agent?
 
-Most AI agent frameworks abstract away how agents actually work.
+Many AI agent frameworks abstract away how agents actually work.
 
-Maya-Agent is being built from scratch to explore the internal building blocks of an agent system:
+Maya-Agent is built from scratch to explore the internal building blocks of an agent system:
 
 ```text
 User Input
-    ↓
+    |
+    v
 Guardrails
-    ↓
+    |
+    v
 Memory Retrieval
-    ↓
+    |
+    v
 Model Reasoning
-    ↓
+    |
+    v
 Tool Calling
-    ↓
+    |
+    v
 Tool Execution
-    ↓
+    |
+    v
 Agent Loop
-    ↓
+    |
+    v
 Output Validation
-    ↓
+    |
+    v
 Final Response
-    ↓
+    |
+    v
 Background Memory Processing
 ```
 
----
+The goal is not to hide the runtime, but to make the runtime understandable.
 
 ## Contributing
 
@@ -998,13 +1005,9 @@ To contribute:
 4. Add tests where applicable
 5. Submit a pull request
 
----
-
 ## License
 
 MIT License
-
----
 
 ## Author
 
