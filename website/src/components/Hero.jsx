@@ -113,7 +113,7 @@ const Hero = () => {
 
               <a
                 href="#features"
-                className="group inline-flex items-center gap-2 rounded-xl bg-[#22c55e] px-5 py-3 font-semibold text-[#06110b] transition hover:bg-emerald-300"
+                className="group inline-flex items-center gap-2 rounded-xl bg-[#22c55e] px-5 py-3 font-display font-semibold text-[#06110b] transition hover:bg-emerald-300"
               >
                 Get Started
 
@@ -127,7 +127,7 @@ const Hero = () => {
                 href="https://github.com/SumanX08/Maya-Agent"
                 target="_blank"
                 rel="noreferrer"
-                className="group inline-flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/4 px-5 py-3 font-semibold text-zinc-200 transition hover:border-emerald-400/40 hover:bg-emerald-500/8"
+                className="group inline-flex items-center gap-2 rounded-xl border font-display border-emerald-500/20 bg-emerald-500/4 px-5 py-3 font-semibold text-zinc-200 transition hover:border-emerald-400/40 hover:bg-emerald-500/8"
               >
                 View on GitHub
 
