@@ -9,20 +9,24 @@ import {
 const codeExamples = {
   Agent: `import { Agent, OpenAIProvider } from 'maya-agent';
 
+const model = new OpenAIProvider({model: "gpt-4.1-mini"});
+
 const agent = new Agent({
   name: 'Maya',
   instructions: 'You are a helpful AI assistant.',
-  model: new OpenAIProvider(),
+  model
 });
 
 await agent.run('Plan my next project');`,
 
   Tools: `import { Agent, OpenAIProvider } from 'maya-agent';
 
+const model = new OpenAIProvider({model: "gpt-4.1-mini"});  
+
 const agent = new Agent({
   name: 'Maya',
   instructions: 'You are a helpful AI assistant.',
-  model: new OpenAIProvider(),
+  model,
   tools: [searchTool,calculatorTool,weatherTool],
 });
 
@@ -30,12 +34,13 @@ await agent.run('Plan my trip');`,
 
   Session: `import {Agent, OpenAIProvider, Session} from 'maya-agent';
 
+const model = new OpenAIProvider({model: "gpt-4.1-mini"});  
 const session = new Session();
 
 const agent = new Agent({
   name: 'Maya',
   instructions: 'Remember our conversation.',
-  model: new OpenAIProvider(),
+  model,
   session,
 });
 
