@@ -20,7 +20,8 @@ export class Agent {
   retryPolicy = {},
   timeoutMs = 30000,
   handoffs = [],
-  maxHandoffs = 3
+  maxHandoffs = 3,
+  session=null
 
 }) {
     if (!name) {
@@ -45,6 +46,7 @@ export class Agent {
     this.eventBus = eventBus;
     this.sessionStore = sessionStore;
     this.memory = memory;
+    this.session=session
 
 this.outputSchema = outputSchema;
     this.guardrails = {
@@ -81,9 +83,9 @@ for (const worker of this.backgroundWorkers) {
   async run(input, { session = null } = {}) {
     const runId = randomUUID();
 
-    if (!session) {
-      session = this.createSession();
-    }
+      if (!session) {
+    session = this.session || this.createSession();
+  }
 
     this.eventBus.emit("run.started", {
       runId,

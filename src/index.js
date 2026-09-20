@@ -56,9 +56,6 @@ export {
   BackgroundWorkerManager
 } from "./workers/BackgroundWorkerManager.js";
 
-export {
-  GraphMaintenanceWorker
-} from "./workers/GraphMaintenanceWorker.js";
 
 export {
   RelationshipBuilderModel

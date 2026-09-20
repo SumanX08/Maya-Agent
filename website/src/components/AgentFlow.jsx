@@ -33,7 +33,7 @@ export default function AgentFlow() {
 
       <div className="relative mx-auto max-w-6xl">
         <div className="mb-16 text-center">
-          <p className="mb-4 font-mono text-xs font-semibold tracking-[0.25em] text-emerald-400">
+          <p className="mb-4 font-mono text-xs font-semibold tracking-[0.25em] text-[#22c55e]">
             AGENT FLOW
           </p>
 
@@ -67,7 +67,7 @@ export default function AgentFlow() {
                 <div
                   className={`flex h-11 w-56 items-center justify-center rounded-xl border text-sm font-semibold ${
                     index === 1
-                      ? "border-emerald-400 bg-emerald-500/10 text-emerald-300 shadow-[0_0_30px_rgba(34,197,94,0.12)]"
+                      ? "border-[#22c55e] bg-emerald-500/10 text-emerald-400 shadow-[0_0_30px_rgba(34,197,94,0.12)]"
                       : "border-white/10 bg-[#0c1311] text-slate-300"
                   }`}
                 >

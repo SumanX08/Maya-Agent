@@ -1,6 +1,6 @@
 {
   "name": "maya-agent",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "An open-source AI Agent SDK for building agents with tools, memory, guardrails, handoffs, structured output, tracing, and reliability features.",
   "type": "module",
   "main": "./src/index.js",

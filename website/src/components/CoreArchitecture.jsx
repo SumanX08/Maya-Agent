@@ -96,12 +96,12 @@ export default function CoreArchitecture() {
             return (
               <div
                 key={feature.title}
-                className="group rounded-xl border border-emerald-500/15 bg-[#0b1210] p-6 transition duration-300 hover:-translate-y-1 hover:border-emerald-400/40 hover:bg-[#0d1714]"
+                className="group rounded-xl border border-[#22c55e] bg-[#0b1210] p-6 transition duration-300 hover:-translate-y-1 hover:border-emerald-400/40 hover:bg-[#0d1714]"
               >
                 <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-lg border border-emerald-500/20 bg-emerald-500/5">
                   <Icon
                     size={18}
-                    className="text-emerald-400"
+                    className="text-[#22c55e]"
                   />
                 </div>
 
