@@ -37,7 +37,7 @@
   "bugs": {
     "url": "https://github.com/SumanX08/Maya-Agent/issues"
   },
-  "homepage": "https://github.com/SumanX08/Maya-Agent#readme",
+  "homepage": "https://maya-agent-nu.vercel.app",
   "dependencies": {
     "@google/genai": "^2.19.0",
     "dotenv": "^17.4.2",
